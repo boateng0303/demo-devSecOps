@@ -17,11 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug OIDC claims
-        uses: github/actions-oidc-debugger@main
-        with:
-          audience: https://github.com/boateng0303
-
       - name: Import AWS credentials from Vault
         uses: hashicorp/vault-action@v3
         with:
@@ -33,7 +28,7 @@ jobs:
             aws/creds/terraform-role access_key | AWS_ACCESS_KEY_ID ;
             aws/creds/terraform-role secret_key | AWS_SECRET_ACCESS_KEY
 
-      - name: Verify AWS caller identity
+      - name: Verify AWS identity
         run: aws sts get-caller-identity
 
       - name: Setup Terraform
@@ -41,9 +36,6 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
 
       - name: Terraform Plan
         run: terraform plan

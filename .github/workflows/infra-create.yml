@@ -1,4 +1,4 @@
-name: Terraform with Vault via GitHub OIDC
+name: Terraform with Vault via GitHub OIDCc
 
 on:
   push:

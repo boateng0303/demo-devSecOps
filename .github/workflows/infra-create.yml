@@ -1,31 +1,27 @@
-name: Terraform Deployment
-on: [push, pull_request]
+name: Terraform with Vault
+
+on:
+  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./terraform
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Fetch Keys from Vault
+      - name: Import secrets from Vault
         uses: hashicorp/vault-action@v3
         with:
           url: http://34.234.69.198:8200
-          role: gh-actions-role
           method: jwt
+          role: gh-actions-role
+          jwtGithubAudience: sigstore
           secrets: |
             aws/creds/terraform-role access_key | AWS_ACCESS_KEY_ID ;
             aws/creds/terraform-role secret_key | AWS_SECRET_ACCESS_KEY
-
-      - uses: hashicorp/setup-terraform@v3
-      - run: terraform init
-      - run: terraform plan
-      - run: terraform apply -auto-approve

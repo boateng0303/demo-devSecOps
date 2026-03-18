@@ -1,7 +1,6 @@
-name: Terraform with Vault OIDC
+name: Terraform with Vault via GitHub OIDC
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
@@ -15,8 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Debug OIDC claims
+        uses: github/actions-oidc-debugger@main
+        with:
+          audience: https://github.com/boateng0303
 
       - name: Import AWS credentials from Vault
         uses: hashicorp/vault-action@v3
@@ -28,6 +32,9 @@ jobs:
           secrets: |
             aws/creds/terraform-role access_key | AWS_ACCESS_KEY_ID ;
             aws/creds/terraform-role secret_key | AWS_SECRET_ACCESS_KEY
+
+      - name: Verify AWS caller identity
+        run: aws sts get-caller-identity
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
